@@ -102,6 +102,7 @@ public class TodoService {
         Todo existing = findById(id);
         existing.setTitle(todo.getTitle());
         existing.setDescription(todo.getDescription());
+        existing.setCategory(todo.getCategory());
         return todoRepository.save(existing);
     }
 

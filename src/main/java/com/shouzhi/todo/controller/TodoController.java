@@ -31,9 +31,13 @@ public class TodoController {
     @GetMapping
     public String index(@RequestParam(required = false) String category, Model model) {
         if (category != null && !category.isEmpty()) {
-            Category cat = Category.valueOf(category);
-            model.addAttribute("todos", todoService.findByCategory(cat));
-            model.addAttribute("selectedCategory", category);
+            try {
+                Category cat = Category.valueOf(category);
+                model.addAttribute("todos", todoService.findByCategory(cat));
+                model.addAttribute("selectedCategory", category);
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("todos", todoService.findAll());
+            }
         } else {
             model.addAttribute("todos", todoService.findAll());
         }
