@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - 待办事项管理</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>待办事项管理</h1>
+    </header>
+
+    <!-- 成功提示 -->
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+    <!-- 新增表单 -->
+    <div class="add-form">
+        <h2>新增待办</h2>
+        <form th:action="@{/todos}" th:object="${newTodo}" method="post">
+            <div class="form-group">
+                <label for="title">标题</label>
+                <input type="text" id="title" th:field="*{title}" placeholder="请输入待办标题" required>
+                <span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+            </div>
+            <div class="form-group">
+                <label for="description">描述（可选）</label>
+                <textarea id="description" th:field="*{description}" placeholder="请输入描述" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">添加</button>
+        </form>
+    </div>
+
+    <!-- 待办列表 -->
+    <div class="todo-list">
+        <h2>待办列表 <span class="count" th:text="'(' + ${#lists.size(todos)} + ')'"></span></h2>
+
+        <div th:if="${#lists.isEmpty(todos)}" class="empty-state">
+            <p>暂无待办事项，快来添加一个吧！</p>
+        </div>
+
+        <div th:each="todo : ${todos}" class="todo-item" th:classappend="${todo.completed} ? 'completed' : ''">
+            <div class="todo-content">
+                <div class="todo-header">
+                    <span class="todo-title" th:text="${todo.title}"></span>
+                    <span class="todo-status" th:text="${todo.completed} ? '已完成' : '进行中'"
+                          th:classappend="${todo.completed} ? 'status-done' : 'status-pending'"></span>
+                </div>
+                <p th:if="${todo.description}" class="todo-desc" th:text="${todo.description}"></p>
+                <span class="todo-date" th:text="${#temporals.format(todo.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+            <div class="todo-actions">
+                <form th:action="@{/todos/{id}/toggle(id=${todo.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-small"
+                            th:text="${todo.completed} ? '撤回' : '完成'"></button>
+                </form>
+                <a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="btn btn-small btn-edit">编辑</a>
+                <form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('确定删除吗？')">
+                    <button type="submit" class="btn btn-small btn-danger">删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
