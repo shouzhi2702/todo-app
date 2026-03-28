@@ -1,11 +1,14 @@
 package com.shouzhi.todo.service;
 
+import com.shouzhi.todo.entity.Category;
 import com.shouzhi.todo.entity.Todo;
 import com.shouzhi.todo.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 创建者：shouzhi | 创建时间: 2026-03-28 | 项目: todo-app
@@ -28,6 +31,40 @@ public class TodoService {
      */
     public List<Todo> findAll() {
         return todoRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    /**
+     * 按分类查询待办事项
+     * @Author shouzhi @Date 2026-03-28
+     * @param category 分类
+     * @return 该分类下的待办事项列表
+     */
+    public List<Todo> findByCategory(Category category) {
+        return todoRepository.findByCategoryOrderByCreatedAtDesc(category);
+    }
+
+    /**
+     * 获取统计数据
+     * @Author shouzhi @Date 2026-03-28
+     * @return 统计信息 Map（totalCount, completedCount, completionRate, categoryStats）
+     */
+    public Map<String, Object> getStatistics() {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        long total = todoRepository.count();
+        long completed = todoRepository.countByCompleted(true);
+        double rate = total > 0 ? (double) completed / total * 100 : 0;
+
+        stats.put("totalCount", total);
+        stats.put("completedCount", completed);
+        stats.put("completionRate", Math.round(rate * 10) / 10.0);
+
+        Map<String, Long> categoryStats = new LinkedHashMap<>();
+        for (Category cat : Category.values()) {
+            categoryStats.put(cat.getLabel(), todoRepository.countByCategory(cat));
+        }
+        stats.put("categoryStats", categoryStats);
+
+        return stats;
     }
 
     /**

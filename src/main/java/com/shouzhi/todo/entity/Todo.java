@@ -29,6 +29,10 @@ public class Todo {
     @Column(nullable = false)
     private Boolean completed = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category = Category.OTHER;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -92,5 +96,13 @@ public class Todo {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 }
