@@ -57,6 +57,7 @@ public class TodoController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("todos", todoService.findAll());
+            model.addAttribute("categories", Category.values());
             return "index";
         }
         todoService.create(todo);
