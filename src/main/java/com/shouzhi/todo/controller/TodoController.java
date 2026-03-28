@@ -1,5 +1,6 @@
 package com.shouzhi.todo.controller;
 
+import com.shouzhi.todo.entity.Category;
 import com.shouzhi.todo.entity.Todo;
 import com.shouzhi.todo.service.TodoService;
 import jakarta.validation.Valid;
@@ -28,9 +29,20 @@ public class TodoController {
      * @Author shouzhi @Date 2026-03-28
      */
     @GetMapping
-    public String index(Model model) {
-        model.addAttribute("todos", todoService.findAll());
+    public String index(@RequestParam(required = false) String category, Model model) {
+        if (category != null && !category.isEmpty()) {
+            try {
+                Category cat = Category.valueOf(category);
+                model.addAttribute("todos", todoService.findByCategory(cat));
+                model.addAttribute("selectedCategory", category);
+            } catch (IllegalArgumentException e) {
+                model.addAttribute("todos", todoService.findAll());
+            }
+        } else {
+            model.addAttribute("todos", todoService.findAll());
+        }
         model.addAttribute("newTodo", new Todo());
+        model.addAttribute("categories", Category.values());
         return "index";
     }
 
@@ -45,6 +57,7 @@ public class TodoController {
                          RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("todos", todoService.findAll());
+            model.addAttribute("categories", Category.values());
             return "index";
         }
         todoService.create(todo);

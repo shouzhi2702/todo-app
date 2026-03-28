@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪表盘 - Todo App</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>统计仪表盘</h1>
+        <nav class="nav-bar">
+            <a href="/" class="nav-link">首页</a>
+            <a href="/dashboard" class="nav-link active">仪表盘</a>
+        </nav>
+    </header>
+
+    <!-- 总览卡片 -->
+    <div class="dashboard-cards">
+        <div class="card">
+            <div class="card-number" th:text="${totalCount}">0</div>
+            <div class="card-label">总任务数</div>
+        </div>
+        <div class="card">
+            <div class="card-number" th:text="${completedCount}">0</div>
+            <div class="card-label">已完成</div>
+        </div>
+        <div class="card">
+            <div class="card-number" th:text="${completionRate} + '%'">0%</div>
+            <div class="card-label">完成率</div>
+        </div>
+    </div>
+
+    <!-- 分类分布 -->
+    <div class="add-form">
+        <h2>分类分布</h2>
+        <div class="category-stats">
+            <div th:each="entry : ${categoryStats}" class="stat-row">
+                <span class="stat-label" th:text="${entry.key}"></span>
+                <div class="stat-bar-bg">
+                    <div class="stat-bar" th:style="'width:' + (${totalCount > 0} ? (${entry.value} * 100 / ${totalCount}) : 0) + '%'"></div>
+                </div>
+                <span class="stat-count" th:text="${entry.value}"></span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
